@@ -1,70 +1,78 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Grafik Firebase</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Grafik Potensiometer</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      text-align: center;
+      background: #f0f0f0;
+    }
+    canvas {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 100%;
+    }
+  </style>
 </head>
 <body>
-  <h2>Grafik Potensiometer</h2>
-  <canvas id="myChart"></canvas>
+  <h2>Grafik Nilai Potensiometer</h2>
+  <canvas id="potChart" width="400" height="200"></canvas>
 
   <script>
-    // Konfigurasi Firebase
-    const firebaseConfig = {
-      apiKey: "ISI_DENGAN_API_KEY_MU",
-      authDomain: "your-project.firebaseapp.com",
-      databaseURL: "https://your-project.firebaseio.com",
-      projectId: "your-project",
-      storageBucket: "your-project.appspot.com",
-      messagingSenderId: "123456789",
-      appId: "1:123456789:web:abc123"
-    };
+    // Ganti URL ini dengan URL Firebase Database kamu TANPA .json di akhir
+    const firebaseURL = "https://uasswnnofal-default-rtdb.asia-southeast1.firebasedatabase.app/";
 
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    // Setup Chart.js
-    const ctx = document.getElementById('myChart').getContext('2d');
+    const ctx = document.getElementById('potChart').getContext('2d');
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: [],
+        labels: [],  // x-axis (misalnya count ke-0, ke-1, dst)
         datasets: [{
-          label: 'Potensiometer',
+          label: 'Nilai Potensio',
           data: [],
-          borderColor: 'blue',
-          fill: false
+          borderColor: 'rgba(75, 192, 192, 1)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderWidth: 2,
+          tension: 0.4,
+          pointRadius: 2,
         }]
       },
       options: {
         responsive: true,
         scales: {
-          x: {
-            title: { display: true, text: 'Waktu' }
-          },
           y: {
-            title: { display: true, text: 'Nilai' }
+            beginAtZero: true,
+            max: 4095
           }
         }
       }
     });
 
-    // Ambil data real-time dari Firebase
-    db.ref("sensor/potensiometer").on("value", snapshot => {
-      const value = snapshot.val();
-      const now = new Date().toLocaleTimeString();
+    // Fungsi ambil data dan update chart
+    async function fetchData() {
+      try {
+        const response = await fetch(firebaseURL);
+        const data = await response.json();
+        const labels = Object.keys(data);
+        const values = Object.values(data);
 
-      if (chart.data.labels.length > 10) {
-        chart.data.labels.shift();
-        chart.data.datasets[0].data.shift();
+        chart.data.labels = labels;
+        chart.data.datasets[0].data = values;
+        chart.update();
+      } catch (error) {
+        console.error("Gagal ambil data:", error);
       }
+    }
 
-      chart.data.labels.push(now);
-      chart.data.datasets[0].data.push(value);
-      chart.update();
-    });
+    // Update setiap 2 detik
+    fetchData();
+    setInterval(fetchData, 2000);
   </script>
 </body>
 </html>
