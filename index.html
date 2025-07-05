@@ -25,14 +25,14 @@
   <canvas id="potChart" width="400" height="200"></canvas>
 
   <script>
-    // Ganti URL ini dengan URL Firebase Database kamu TANPA .json di akhir
-    const firebaseURL = "https://uasswnnofal-default-rtdb.asia-southeast1.firebasedatabase.app/";
+    // Ganti URL ini dengan path history dan TAMBAHKAN .json
+    const firebaseURL = "https://uasswnnofal-default-rtdb.asia-southeast1.firebasedatabase.app/POTENSIO/history.json";
 
     const ctx = document.getElementById('potChart').getContext('2d');
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
-        labels: [],  // x-axis (misalnya count ke-0, ke-1, dst)
+        labels: [],
         datasets: [{
           label: 'Nilai Potensio',
           data: [],
@@ -54,23 +54,24 @@
       }
     });
 
-    // Fungsi ambil data dan update chart
     async function fetchData() {
       try {
         const response = await fetch(firebaseURL);
         const data = await response.json();
-        const labels = Object.keys(data);
-        const values = Object.values(data);
 
-        chart.data.labels = labels;
-        chart.data.datasets[0].data = values;
-        chart.update();
+        if (data) {
+          const sortedKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
+          const values = sortedKeys.map(key => data[key]);
+
+          chart.data.labels = sortedKeys;
+          chart.data.datasets[0].data = values;
+          chart.update();
+        }
       } catch (error) {
         console.error("Gagal ambil data:", error);
       }
     }
 
-    // Update setiap 2 detik
     fetchData();
     setInterval(fetchData, 2000);
   </script>
