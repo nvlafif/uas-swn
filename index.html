@@ -4,10 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Grafik Potensiometer</title>
-
-  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -28,10 +25,10 @@
   <canvas id="potChart" width="400" height="200"></canvas>
 
   <script>
+    // Ganti URL ini dengan path history dan TAMBAHKAN .json
     const firebaseURL = "https://uasswnnofal-default-rtdb.asia-southeast1.firebasedatabase.app/POTENSIO/history.json";
 
     const ctx = document.getElementById('potChart').getContext('2d');
-
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -43,21 +40,12 @@
           backgroundColor: 'rgba(255, 0, 0, 0.2)',
           borderWidth: 2,
           tension: 0.4,
-          pointRadius: 4,
-          pointHoverRadius: 6,
+          pointRadius: 2,
         }]
       },
       options: {
         responsive: true,
-        animation: false,
         scales: {
-          x: {
-            type: 'category',
-            ticks: {
-              autoSkip: false,
-              maxTicksLimit: 10
-            }
-          },
           y: {
             beginAtZero: true,
             max: 4095
@@ -72,15 +60,11 @@
         const data = await response.json();
 
         if (data) {
-          // Urutkan data berdasarkan key
           const sortedKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
-          // Ambil 10 terakhir
-          const last10Keys = sortedKeys.slice(-10);
-          const last10Values = last10Keys.map(key => data[key]);
+          const values = sortedKeys.map(key => data[key]);
 
-          // Tampilkan hanya 10 terakhir
-          chart.data.labels = last10Keys;
-          chart.data.datasets[0].data = last10Values;
+          chart.data.labels = sortedKeys;
+          chart.data.datasets[0].data = values;
           chart.update();
         }
       } catch (error) {
