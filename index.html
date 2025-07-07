@@ -7,8 +7,6 @@
 
   <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <!-- Plugin Zoom/Pan Chart.js -->
-  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
 
   <style>
     body {
@@ -64,19 +62,6 @@
             beginAtZero: true,
             max: 4095
           }
-        },
-        plugins: {
-          zoom: {
-            pan: {
-              enabled: true,
-              mode: 'x'
-            },
-            zoom: {
-              wheel: { enabled: true },
-              pinch: { enabled: true },
-              mode: 'x'
-            }
-          }
         }
       }
     });
@@ -87,23 +72,15 @@
         const data = await response.json();
 
         if (data) {
+          // Urutkan data berdasarkan key
           const sortedKeys = Object.keys(data).sort((a, b) => Number(a) - Number(b));
-          const values = sortedKeys.map(key => data[key]);
+          // Ambil 10 terakhir
+          const last10Keys = sortedKeys.slice(-10);
+          const last10Values = last10Keys.map(key => data[key]);
 
-          chart.data.labels = sortedKeys;
-          chart.data.datasets[0].data = values;
-
-          const totalPoints = sortedKeys.length;
-          const visiblePoints = 10; // Lebih sedikit titik untuk jarak lebih lebar
-
-          if (totalPoints > visiblePoints) {
-            chart.options.scales.x.min = totalPoints - visiblePoints;
-            chart.options.scales.x.max = totalPoints - 1;
-          } else {
-            chart.options.scales.x.min = undefined;
-            chart.options.scales.x.max = undefined;
-          }
-
+          // Tampilkan hanya 10 terakhir
+          chart.data.labels = last10Keys;
+          chart.data.datasets[0].data = last10Values;
           chart.update();
         }
       } catch (error) {
