@@ -4,7 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Grafik Potensiometer</title>
+
+  <!-- Chart.js -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Plugin Zoom/Pan Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -25,10 +30,10 @@
   <canvas id="potChart" width="400" height="200"></canvas>
 
   <script>
-    // Ganti URL ini dengan path history dan TAMBAHKAN .json
     const firebaseURL = "https://uasswnnofal-default-rtdb.asia-southeast1.firebasedatabase.app/POTENSIO/history.json";
 
     const ctx = document.getElementById('potChart').getContext('2d');
+
     const chart = new Chart(ctx, {
       type: 'line',
       data: {
@@ -45,10 +50,31 @@
       },
       options: {
         responsive: true,
+        animation: false,
         scales: {
+          x: {
+            type: 'category',
+            ticks: {
+              autoSkip: true,
+              maxTicksLimit: 20
+            }
+          },
           y: {
             beginAtZero: true,
             max: 4095
+          }
+        },
+        plugins: {
+          zoom: {
+            pan: {
+              enabled: true,
+              mode: 'x'
+            },
+            zoom: {
+              wheel: { enabled: true },
+              pinch: { enabled: true },
+              mode: 'x'
+            }
           }
         }
       }
@@ -65,6 +91,18 @@
 
           chart.data.labels = sortedKeys;
           chart.data.datasets[0].data = values;
+
+          // Scroll otomatis ke data terbaru
+          const totalPoints = sortedKeys.length;
+          const visiblePoints = 20;
+          if (totalPoints > visiblePoints) {
+            chart.options.scales.x.min = totalPoints - visiblePoints;
+            chart.options.scales.x.max = totalPoints - 1;
+          } else {
+            chart.options.scales.x.min = undefined;
+            chart.options.scales.x.max = undefined;
+          }
+
           chart.update();
         }
       } catch (error) {
