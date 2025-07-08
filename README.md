@@ -1,6 +1,6 @@
 # 📈 Grafik Potensiometer Realtime
 
-Proyek ini adalah aplikasi berbasis HTML yang menampilkan grafik nilai **potensiometer** secara **realtime** menggunakan data dari **Firebase Realtime Database**. Visualisasi dilakukan dengan **Chart.js** dan plugin **chartjs-plugin-zoom**, menampilkan 20 data terbaru dan mendukung scroll horizontal untuk melihat data sebelumnya.
+Proyek ini adalah aplikasi berbasis HTML yang menampilkan grafik nilai **potensiometer** secara **realtime** menggunakan data dari **Firebase Realtime Database**. Visualisasi dilakukan dengan **Chart.js** dan plugin **chartjs-plugin-zoom**, menampilkan 20 data terbaru dan mendukung scroll horizontal untuk melihat data sebelumnya. Nilai grafik diambil dari nilai potensiometer yang diinputkan ke Firebase realtime database. Project ini dikendalikan menggunakan ESP32.
 
 ---
 
@@ -8,6 +8,7 @@ Proyek ini adalah aplikasi berbasis HTML yang menampilkan grafik nilai **potensi
 
 - Menampilkan grafik nilai potensiometer secara realtime.
 - Data diperbarui otomatis setiap 2 detik.
+- Grafik dipengaruhi oleh nilai potensiometer yang berubah
 - Menampilkan hanya 20 data terbaru secara default.
 - Mendukung scroll (pan) horizontal ke data sebelumnya.
 - Tampilan responsif dan bersih.
